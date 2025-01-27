@@ -7,7 +7,7 @@ use App\Http\Controllers\Auth\RegisterController;
 
 
 //Ruta raíz
-Route::get('', [LoginController::class, 'showLoginForm'])->name('login');
+Route::get('', [LoginController::class, 'showLoginForm']);
 
 // Ruta para mostrar el formulario de inicio de sesión
 Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
