@@ -23,7 +23,7 @@ Route::middleware(['auth'])->group(function () {
 
 
     // Rutas para reservas
-    Route::resource('reservas', ReservaController::class);
+    Route::resource('reservas', ReservaController::class)->except(['destroy']);
     Route::post('reservas/pagar/{id}', [ReservaController::class, 'pagar'])->name('reservas.pagar');
     Route::delete('reservas/{id}', [ReservaController::class, 'destroy'])->name('reservas.destroy');
 
