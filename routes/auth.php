@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterController;
 
+
 //Ruta raíz
 Route::get('', [LoginController::class, 'showLoginForm'])->name('login');
 
