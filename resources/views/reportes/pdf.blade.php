@@ -37,6 +37,9 @@
             margin: 0;
             padding: 10px;
         }
+        .celda_centered {
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -47,11 +50,11 @@
     <table>
         <thead>
             <tr>
-                <th>Código</th>
-                <th>Fecha</th>
-                <th>Hora</th>
-                <th>Total</th>
-                <th>Productos Vendidos</th>
+                <th class="celda_centered">Código</th>
+                <th class="celda_centered">Fecha</th>
+                <th class="celda_centered">Hora</th>
+                <th class="celda_centered">Total</th>
+                <th class="celda_centered">Productos Vendidos</th>
             </tr>
         </thead>
         <tbody>
@@ -79,9 +82,11 @@
     <table>
         <thead>
             <tr>
-                <th>Fecha</th>
-                <th>Hora Inicio</th>
-                <th>Total</th>
+                <th class="celda_centered">Fecha</th>
+                <th class="celda_centered">Hora Inicio</th>
+                <th class="celda_centered">Hora Fin</th>
+                <th class="celda_centered">Duración</th>
+                <th class="celda_centered">Total</th>
             </tr>
         </thead>
         <tbody>
@@ -89,6 +94,8 @@
                 <tr>
                     <td>{{ $reserva->fecha->format('d/m/Y') }}</td>
                     <td>{{ $reserva->hora_inicio->format('H:i:s') }}</td>
+                    <td>{{ $reserva->hora_fin }}</td>
+                    <td>{{ $reserva->duracion * 60 }} min</td>
                     <td>S/. {{ number_format($reserva->total, 2) }}</td>
                 </tr>
             @endforeach

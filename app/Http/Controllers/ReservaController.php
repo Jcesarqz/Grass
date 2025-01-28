@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Reserva;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class ReservaController extends Controller
 {
@@ -39,10 +40,16 @@ class ReservaController extends Controller
         // Calcular el total de la reserva
         $total = $request->duracion * $request->precio;
 
+        // Calculando hora_fin usando Carbon
+        $horaInicio = Carbon::createFromFormat('H:i', $request->hora_inicio); // Crear instancia Carbon de la hora de inicio
+        $duracionMin = $request->duracion * 60; // Convertir duración en minutos
+        $hora_fin = $horaInicio->addMinutes($duracionMin)->format('H:i'); // Sumar minutos y formatear como 'H:i'
+
         // Crear la nueva reserva
-        Reserva::create([
+        $reservaCreada = Reserva::create([
             'fecha' => $request->fecha,
             'hora_inicio' => $request->hora_inicio,
+            'hora_fin' => $hora_fin,
             'duracion' => $request->duracion,
             'precio' => $request->precio,
             'total' => $total,

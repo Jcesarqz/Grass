@@ -38,9 +38,9 @@
                     initialDate: '2025-01-01',
                     events: {!! json_encode($reservas->map(function ($reserva) {
                         return [
-                            'title' => 'Reserva',
+                            'title' => ' - ' .  \Carbon\Carbon::parse($reserva->hora_fin)->format('H:i') . ' R',
                             'start' => $reserva->fecha . 'T' . $reserva->hora_inicio,
-                            'end' => $reserva->fecha . 'T' . \Carbon\Carbon::parse($reserva->hora_inicio)->addMinutes($reserva->duracion * 60)->format('H:i'),
+                            //$reserva->fecha . 'T' . \Carbon\Carbon::parse($reserva->hora_inicio)->addMinutes($reserva->duracion * 60)->format('H:i'),
                         ];
                     })) !!},
                     dateClick: function(info) {
@@ -81,6 +81,7 @@
                         <tr>
                             <th>Fecha</th>
                             <th>Hora de Inicio</th>
+                            <th>Hora de Fin</th>
                             <th>Duración</th>
                             <th>Precio</th>
                             <th>Total</th>
@@ -94,7 +95,23 @@
                                 <tr class="hover-shadow">
                                     <td>{{ \Carbon\Carbon::parse($reserva->fecha)->format('d-m-Y') }}</td>
                                     <td>{{ $reserva->hora_inicio }}</td>
-                                    <td>{{ $reserva->duracion == 0.5 ? 'Media Hora' : ($reserva->duracion == 1 ? '1 Hora' : $reserva->duracion . ' Horas') }}</td>
+                                    <td>{{ $reserva->hora_fin }}</td>
+                                    <td>
+                                        @php
+                                            $horas = floor($reserva->duracion); // Parte entera (horas)
+                                            $minutos = ($reserva->duracion - $horas) * 60; // Parte decimal convertida a minutos
+                                        @endphp
+
+                                        @if ($horas > 0 && $minutos > 0)
+                                            {{ $horas }} {{ $horas == 1 ? 'hora' : 'Horas' }} y {{ $minutos }} min
+                                        @elseif ($horas > 0)
+                                            {{ $horas }} {{ $horas == 1 ? 'hora' : 'Horas' }}
+                                        @elseif ($minutos > 0)
+                                            {{ $minutos }} min
+                                        @else
+                                            Sin duración
+                                        @endif
+                                    </td>
                                     <td>S/. {{ number_format($reserva->precio, 2) }}</td>
                                     <td>S/. {{ number_format($reserva->total, 2) }}</td>
                                     <td class="text-center text-white bg-warning font-weight-bold rounded">

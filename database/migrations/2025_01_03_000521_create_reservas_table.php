@@ -13,7 +13,8 @@ class CreateReservasTable extends Migration
             $table->id();
             $table->date('fecha');
             $table->time('hora_inicio');
-            $table->integer('duracion'); // Duración en horas
+            $table->time('hora_fin');
+            $table->double('duracion'); // Duración en horas
             $table->decimal('precio', 8, 2);
             $table->decimal('total', 8, 2); // Total de la reserva (precio por hora * duración)
             $table->timestamps();
