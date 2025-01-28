@@ -240,7 +240,7 @@
                 <!-- Contenedor con título -->
                 <div class="content-title-container">
                     <i class="fas fa-futbol"></i>
-                    <h1>GRASS SINTETICO SICA</h1>
+                    <h1>GRASS SINTETICO SAN SEBASTIAN</h1>
                     <i class="fas fa-futbol"></i>
                 </div>
 
