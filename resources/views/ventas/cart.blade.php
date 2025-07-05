@@ -26,6 +26,19 @@
             <form action="{{ route('ventas.store') }}" method="POST">
                 @csrf
                 <input type="hidden" name="total" value="{{ $total }}">
+                
+                <div class="form-group mb-3">
+                <label for="cliente_id">Seleccionar Cliente</label>
+                <select name="cliente_id" class="form-control" required>
+                    <option value="">-- Seleccione un cliente --</option>
+                    @foreach ($clientes as $cliente)
+                        <option value="{{ $cliente->id }}">
+                            {{ $cliente->nombre }} - {{ $cliente->dni }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
                 <button type="submit" class="btn btn-success">Realizar Venta</button>
             </form>
         @else

@@ -11,8 +11,33 @@ use PDF;
 class ReporteController extends Controller
 {
     // Mostrar formulario para seleccionar el reporte
-    public function index()
+    public function index(Request $request)
     {
+        if ($request->header('Accept') === 'application/xml' || $request->query('format') === 'xml') {
+        $ventas = Venta::latest()->get();
+        $reservas = Reserva::latest()->get();
+
+        $xml = new \SimpleXMLElement('<reportes/>');
+
+        $ventasXml = $xml->addChild('ventas');
+        foreach ($ventas as $venta) {
+            $ventaXml = $ventasXml->addChild('venta');
+            $ventaXml->addChild('id', $venta->id);
+            $ventaXml->addChild('codigo', $venta->codigo);
+            $ventaXml->addChild('fecha', $venta->fecha);
+            $ventaXml->addChild('total', $venta->total);
+        }
+
+        $reservasXml = $xml->addChild('reservas');
+        foreach ($reservas as $reserva) {
+            $reservaXml = $reservasXml->addChild('reserva');
+            $reservaXml->addChild('id', $reserva->id);
+            $reservaXml->addChild('fecha', $reserva->fecha);
+            $reservaXml->addChild('total', $reserva->total);
+        }
+
+        return response($xml->asXML(), 200)->header('Content-Type', 'application/xml');
+    }
         return view('reportes.index');
     }
 

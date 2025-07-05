@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\Cliente;
 use App\Models\Producto;
 use App\Models\Venta;
 use Illuminate\Http\Request;
@@ -12,8 +12,23 @@ class VentaController extends Controller
     // Método para mostrar la lista de productos y ventas
     public function index(Request $request)
     {
-        $terminoBusqueda = $request->input('search', '');
+        if ($request->header('Accept') === 'application/xml' || $request->query('format') === 'xml') {
+        $ventas = Venta::with('cliente')->latest()->get();
+        $xml = new \SimpleXMLElement('<ventas/>');
+        foreach ($ventas as $venta) {
+            $ventaXml = $xml->addChild('venta');
+            $ventaXml->addChild('id', $venta->id);
+            $ventaXml->addChild('codigo', $venta->codigo);
+            $ventaXml->addChild('fecha', $venta->fecha);
+            $ventaXml->addChild('total', $venta->total);
+            $ventaXml->addChild('cliente_id', $venta->cliente_id);
+        }
+        return response($xml->asXML(), 200)->header('Content-Type', 'application/xml');
+    }
 
+    $productos = Producto::all();
+        $terminoBusqueda = $request->input('search', '');
+        $clientes = Cliente::all();
         // Buscar productos por nombre
         $productos = Producto::where('nombre', 'LIKE', "%{$terminoBusqueda}%")->paginate(10);
 
@@ -24,7 +39,8 @@ class VentaController extends Controller
             })
             ->paginate(10);
 
-        return view('ventas.index', compact('productos', 'ventas', 'terminoBusqueda'));
+        return view('ventas.index', compact('productos', 'ventas', 'clientes', 'terminoBusqueda'));
+
     }
 
     // Método para añadir un producto al carrito
@@ -118,10 +134,15 @@ class VentaController extends Controller
 
         // Crear la venta
         $venta = Venta::create([
+            'cliente_id' => $request->cliente_id,
             'codigo' => 'V' . str_pad(Venta::count() + 1, 4, '0', STR_PAD_LEFT),
             'fecha' => Carbon::now(),
             'total' => $total,
         ]);
+        if ($venta->cliente) {
+            $venta->cliente->increment('total_compras', $venta->total);
+            $venta->cliente->increment('puntos', floor($venta->total / 10));
+         }
 
         // Guardar los productos vendidos
         foreach ($carrito as $id => $producto) {
@@ -141,4 +162,21 @@ class VentaController extends Controller
 
         return redirect()->route('ventas.index')->with('success', 'Venta realizada con éxito');
     }
+    public function asignarCliente(Request $request, Venta $venta)
+    {
+        $request->validate([
+            'cliente_id' => 'required|exists:clientes,id'
+        ]);
+
+        $venta->cliente_id = $request->cliente_id;
+        $venta->save();
+
+        // Actualizar compras y puntos
+        $venta->cliente->increment('total_compras', $venta->total);
+        $venta->cliente->increment('puntos', floor($venta->total / 10));
+
+        return redirect()->back()->with('success', 'Cliente asignado correctamente.');
+    }
+
+    
 }

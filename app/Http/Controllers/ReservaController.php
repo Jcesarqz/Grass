@@ -9,8 +9,26 @@ use Carbon\Carbon;
 class ReservaController extends Controller
 {
     // Mostrar todas las reservas
-    public function index()
+    public function index(Request $request)
     {
+        if ($request->header('Accept') === 'application/xml' || $request->query('format') === 'xml') {
+        $reservas = Reserva::latest()->get();
+        $xml = new \SimpleXMLElement('<reservas/>');
+        foreach ($reservas as $reserva) {
+            $reservaXml = $xml->addChild('reserva');
+            $reservaXml->addChild('id', $reserva->id);
+       
+            $reservaXml->addChild('fecha', $reserva->fecha);
+            $reservaXml->addChild('hora_inicio', $reserva->hora_inicio);
+            $reservaXml->addChild('hora_fin', $reserva->hora_fin);
+            $reservaXml->addChild('duracion', $reserva->duracion);
+            $reservaXml->addChild('precio', $reserva->precio);
+            $reservaXml->addChild('total', $reserva->total);
+            $reservaXml->addChild('estado', $reserva->estado);
+        }
+        return response($xml->asXML(), 200)->header('Content-Type', 'application/xml');
+    }
+        
         // Obtener todas las reservas
         $reservas = Reserva::all();
 
@@ -31,6 +49,7 @@ class ReservaController extends Controller
     {
         // Validar y almacenar la nueva reserva
         $request->validate([
+
             'fecha' => 'required|date',
             'hora_inicio' => 'required|date_format:H:i',
             'duracion' => 'required|numeric',
@@ -47,6 +66,7 @@ class ReservaController extends Controller
 
         // Crear la nueva reserva
         $reservaCreada = Reserva::create([
+            'cliente_id' => $request->cliente_id,
             'fecha' => $request->fecha,
             'hora_inicio' => $request->hora_inicio,
             'hora_fin' => $hora_fin,
@@ -55,6 +75,10 @@ class ReservaController extends Controller
             'total' => $total,
             'estado' => 'pendiente', // Reserva está pendiente inicialmente
         ]);
+        if ($reservaCreada->cliente) {
+            $reservaCreada->cliente->increment('total_compras', $reservaCreada->total);
+            $reservaCreada->cliente->increment('puntos', floor($reservaCreada->total / 10));
+        }
 
         // Redirigir con mensaje de éxito
         return redirect()->route('reservas.index')->with('success', 'Reserva programada correctamente.');

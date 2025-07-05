@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 
+
 class Venta extends Model
 {
     use HasFactory;
@@ -37,4 +38,10 @@ class Venta extends Model
     {
         return $this->fecha ? $this->fecha->format('d/m/Y H:i:s') : null;
     }
+    public function cliente()
+    {
+        return $this->belongsTo(Cliente::class);
+    }
+
+
 }

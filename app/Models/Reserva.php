@@ -18,5 +18,10 @@ class Reserva extends Model
         'total',
         'estado', // Agrega este campo
     ];
+    public function cliente()
+    {
+        return $this->belongsTo(Cliente::class);
+    }
+
 }
 

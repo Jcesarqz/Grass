@@ -135,6 +135,7 @@
                         <th>Hora</th>
                         <th>Total</th>
                         <th>Productos Vendidos</th>
+                        <th>Cliente</th> {{-- Nueva columna --}}
                     </tr>
                 </thead>
                 <tbody>
@@ -151,10 +152,26 @@
                                     @endforeach
                                 </ul>
                             </td>
+                            <td>
+                                @if($venta->cliente)
+                                    <span class="badge bg-success">{{ $venta->cliente->nombre }}</span>
+                                @else
+                                    <form action="{{ route('ventas.asignarCliente', $venta->id) }}" method="POST" class="d-flex">
+                                        @csrf
+                                        <select name="cliente_id" class="form-select form-select-sm me-2" required>
+                                            <option value="">Seleccionar cliente</option>
+                                            @foreach($clientes as $cliente)
+                                                <option value="{{ $cliente->id }}">{{ $cliente->nombre }} - DNI {{ $cliente->dni }}</option>
+                                            @endforeach
+                                        </select>
+                                        <button type="submit" class="btn btn-sm btn-primary">Asignar</button>
+                                    </form>
+                                @endif
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-center text-muted">No hay ventas registradas.</td>
+                            <td colspan="6" class="text-center text-muted">No hay ventas registradas.</td>
                         </tr>
                     @endforelse
                 </tbody>
