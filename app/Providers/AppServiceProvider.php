@@ -6,6 +6,7 @@ use Spatie\ArrayToXml\ArrayToXml;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\URL;
 
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -29,6 +30,9 @@ class AppServiceProvider extends ServiceProvider
         if (str_contains($format, 'xml')) {
             return Response::xml($data, $status);
         }
+         if (env('APP_ENV') === 'production') {
+             URL::forceScheme('https');
+         }
 
         return response()->json($data, $status);
     });
